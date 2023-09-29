@@ -27,7 +27,7 @@ await bot.telegram.setMyCommands([
   { command: "reset", description: "Сбросить настройки" },
   { command: "dress", description: "Режим смены одежды на фото" },
   { command: "colorize", description: "Колоризировать аниме персонажа" },
-   {command: "help", description: "Показать все команды" },
+  { command: "help", description: "Показать все команды" },
 ]);
 
 bot.command("help", ctx => {
@@ -88,11 +88,13 @@ bot.command("start", async (ctx) => {
 
   await ctx.reply("Привет, я бот который умеет переодевать людей и аниме персонажей.\n\nДостаточно скинуть фотографию и через 30-40 секунд получишь результат", startKeyboard)
 
+
   const SESSIONS_FILE = path.join(__dirname, 'sessions.json');
 
   // Загружаем сессии при запуске
   if (fs.existsSync(SESSIONS_FILE)) {
     const sessionsData = fs.readFileSync(SESSIONS_FILE);
+    ctx.session = { ...INITIAL_SESSION };
     try {
       const sessions = JSON.parse(sessionsData);
       ctx.session = sessions;
@@ -120,9 +122,9 @@ bot.on('photo', async (ctx) => {
 
       ctx.reply("Фото загруженно, введите что изображенно на фото\nНапример: blonde girl, red t-short, red bra\nstay in street")
       return ""
-    } 
+    }
 
-    if(ctx.session.changeDress){
+    if (ctx.session.changeDress) {
 
       // Фотографии приходят в разных размерах, мы возьмем самую большую
       const photo = ctx.message.photo.pop();
@@ -179,7 +181,7 @@ bot.on('photo', async (ctx) => {
       ctx.session.changeDress = false
       ctx.session.photoToColorize = ""
     }
-    
+
 
   } catch (e) {
     ctx.reply("Что-то пошло не так, попробуйте снова")
@@ -274,7 +276,7 @@ bot.on('text', async (ctx) => {
     const sessionPath = await createSessionPath(ctx);
 
     ctx.reply("Начата обработка, подождите 30 секунд")
-    await colorizeAnime(ctx.session.photoToColorize,sessionPath ,ctx.message.text)
+    await colorizeAnime(ctx.session.photoToColorize, sessionPath, ctx.message.text)
 
     // Выводим все что мы нагененрировали
     const mediaGroup = [];
@@ -314,7 +316,7 @@ bot.on('text', async (ctx) => {
 
 bot.launch();
 // Restart msg
-sendMessageToAllUsers("Бот был перезапущен, \nВведите /start для начала работы", bot)
+// sendMessageToAllUsers("Бот был перезапущен, \nВведите /start для начала работы", bot)
 // sendMessageToAllUsers("Бот временно не работает, тех.работы", bot)
 
 const sessionPath = `sessions`;

@@ -14,23 +14,24 @@ def dilate_mask(mask_filename, dilation_radius=20):
     и сохраняет расширенную маску в исходный файл.
 
     :param mask_filename: Имя файла с маской, которую нужно расширить.
-    :param dilation_radius: Количество пикселей, на которые нужно расширить маску. По умолчанию равно 40.
+    :param dilation_radius: Количество пикселей, на которые нужно расширить маску. По умолчанию равно 20.
     """
+
     # Загружаем маску из файла
-    mask = imread(mask_filename)
+    mask = imread(mask_filename, as_gray=True)
 
     # Расширяем область на заданное количество пикселей
-    dilated_mask = binary_dilation(mask > 1, structure=disk(dilation_radius))
+    dilated_mask = binary_dilation(mask > 0, disk(dilation_radius))
 
     # Нормализуем маску
-    dilated_mask = (dilated_mask * 255).astype(np.uint8)
+    dilated_mask = (dilated_mask.astype(np.uint8)) * 255
 
     # Сохраняем расширенную маску в исходный файл
-    im = Image.fromarray(dilated_mask)
-    im.save(mask_filename)
+    Image.fromarray(dilated_mask).save(mask_filename)
 
     return mask_filename
 
+# dilate_mask("D:\\Dev\\UNDRESS_bot\\sessions\\225703666\\1245\\mask1.png",20)
 
 def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
     # Загрузим изображение маски

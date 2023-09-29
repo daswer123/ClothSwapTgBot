@@ -48,7 +48,7 @@ def create_edge_mask(file_path, border_width = 5):
     eroded = morphology.erosion(mask, selem)
 
     # Создаем маску краев путем вычитания исходной маски из расширенной
-    edge_mask = dilated - eroded
+    edge_mask = dilated ^ eroded
 
     # Сохраняем маску краев в файл
     edge_mask_img = Image.fromarray(edge_mask)
@@ -103,7 +103,7 @@ def save_mask(mask_64, i):
     mask_name = f"mask{i}.png"  # Use f-string to insert the value of `i` into the file name
     mask_image.save(mask_name)
 
-def handle_first_response(reply,one_mask,mask_expand = 5):
+def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
     # декодировать base64 в байты
     mask_base64 = reply["masks"][0]  # получить Вторую маску
     mask_base64_1 = reply["masks"][1]  # получить Вторую маску
@@ -138,32 +138,37 @@ def handle_first_response(reply,one_mask,mask_expand = 5):
 
     create_edge_mask("mask1.png",3)
     
+    dilate_mask("mask1.png",mask_expand)
+    
+    fullmask = filename_to_base64("mask1.png").decode()
+    return [fullmask]
 
-    if(one_mask > 0):
-        dilate_mask(f"mask{one_mask}.png",mask_expand)
-        fullmask = filename_to_base64(f"mask{one_mask}.png").decode()
-        return [fullmask]
+    # if(one_mask > 0):
+    #     dilate_mask(f"mask{1}.png",mask_expand)
+    #     fullmask = filename_to_base64(f"mask{1}.png").decode()
+    #     return [fullmask]
 
-    if(len(mask_num) > 1):
-        dilate_mask(f"mask{mask_num[0]}.png",mask_expand)
-        dilate_mask(f"mask{mask_num[1]}.png",mask_expand)
-        breast_mask = filename_to_base64(f"mask{mask_num[0]}.png").decode()
-        under_mask = filename_to_base64(f"mask{mask_num[1]}.png").decode()
-    else:
-        masks = split_mask_into_regions(f"mask{mask_num[0]}.png",1000, mask_expand)
-        if(len(masks) > 1):
-            breast_mask = filename_to_base64("mask_region_0.png").decode()
-            under_mask = filename_to_base64("mask_region_1.png").decode()
-        else:
-            fullmask = filename_to_base64("mask_region_0.png").decode()
-            return [fullmask]
-    return [breast_mask, under_mask]
+    # if(len(mask_num) > 1):
+    #     dilate_mask(f"mask{mask_num[0]}.png",mask_expand)
+    #     dilate_mask(f"mask{mask_num[1]}.png",mask_expand)
+    #     breast_mask = filename_to_base64(f"mask{mask_num[0]}.png").decode()
+    #     under_mask = filename_to_base64(f"mask{mask_num[1]}.png").decode()
+    # else:
+    #     masks = split_mask_into_regions(f"mask{mask_num[0]}.png",1000, mask_expand)
+    #     if(len(masks) > 1):
+    #         breast_mask = filename_to_base64("mask1.png").decode()
+    #         under_mask = filename_to_base64("mask2.png").decode()
+    #     else:
+    #         dilate_mask(f"mask{1}.png",mask_expand)
+    #         fullmask = filename_to_base64("mask1.png").decode()
+    #         return [fullmask]
+    # return [breast_mask, under_mask]
     # masks = split_mask_into_regions("mask2.png")
     # masks = split_mask_into_regions("mask3.png")
 
     
 
-def second_request(mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Karras"):
+def second_request(onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Karras"):
     # формирование запроса на второй этап
     payload2 = {
       "init_images": [img_base64],
@@ -172,11 +177,11 @@ def second_request(mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Kar
       "image_cfg_scale": 7,
       "mask": mask,
       "mask_blur": 6,
-      "mask_blur_x": 6,
-      "mask_blur_y": 6,
+      "mask_blur_x": 0,
+      "mask_blur_y": 0,
       "inpainting_fill": 1,
       "inpaint_full_res": True,
-      "inpaint_full_res_padding": 90,
+      "inpaint_full_res_padding": 128,
       "inpainting_mask_invert": 0,
       "initial_noise_multiplier": 1,
       "prompt": prompt,
@@ -186,7 +191,7 @@ def second_request(mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Kar
       "seed_resize_from_h": -1,
       "seed_resize_from_w": -1,
       "sampler_name": samler,
-      "batch_size": 4,
+      "batch_size": 2,
       "n_iter": 1,
       "steps": 25,
       "cfg_scale": 7,
@@ -210,6 +215,7 @@ def second_request(mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Kar
       "alwayson_scripts": {
             "ADetailer": {
                 "args": [
+                    onAdt,
                     {
                         "ad_model": "hand_yolov8n.pt",
                         "ad_confidence": 0.2,
@@ -316,25 +322,31 @@ def main():
         masks = [white_maks,pre_masks[0],pre_masks[1]]
 
     if(content_type == "real"):
-        change_model("Reliberate-inpainting.safetensors [c54f90e540]")
+        change_model("absolutereality_v181INPAINTING.safetensors [7e16c94105]")
     else:
         change_model("Anime-inpainting.safetensors [5bca7e55ea]")
 
     white_maks = filename_to_base64("test_mask_line.png").decode()
     print("white mask", white_maks)
 
-    if(len(masks) > 2):
-        img = second_request(masks[1],0, img_base64,prompt_base + args.prompt_1,args.den_str_1)
-        img = second_request(masks[1],1, img,prompt_base + "detailed skin",args.den_str_2,"Heun")
-        # change_model("reliberate_v10.safetensors [980cb713af]")
-        img = second_request(masks[2],2, img,args.prompt_2,args.den_str_3)
-        img = second_request(masks[2],3, img,prompt_base + "detailed skin",args.den_str_4,"Heun")
-        # img = second_request(masks[0],4, img,"detailed",0.1)
-    else:
-        img = second_request(masks[1],0, img_base64, prompt_base + args.prompt_1,args.den_str_1)
-        img = second_request(white_maks,1, img, "",args.den_str_2)
+    # if(len(masks) > 2):
+    #     img = second_request(False,masks[1],0, img_base64,prompt_base + args.prompt_1,args.den_str_1)
+    #     img = second_request(False,masks[1],1, img,prompt_base + "detailed skin",args.den_str_2,"Heun")
+    #     # change_model("reliberate_v10.safetensors [980cb713af]")
+    #     img = second_request(False,masks[2],2, img,args.prompt_2,args.den_str_3)
+    #     img = second_request(True,masks[2],3, img,prompt_base + "detailed skin",args.den_str_4,"Heun")
+    #     # img = second_request(masks[0],4, img,"detailed",0.1)
+    # else:
+    # change_model("reliberate_v20.safetensors [6b08e2c182]")
+    img = second_request(False,masks[1],0, img_base64, prompt_base + "(" + args.prompt_1 +":1.2 )",1)
+    # change_model("absolutereality_v181INPAINTING.safetensors [7e16c94105]")
+    img = second_request(False,masks[1],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
+    img = second_request(False,masks[1],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
+    img = second_request(False,masks[0],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
+    img = second_request(True,white_maks,1, img, "",args.den_str_2)
         
 
 
 if __name__ == "__main__":
     main()
+

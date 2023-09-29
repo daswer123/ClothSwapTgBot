@@ -84,7 +84,7 @@ export const changeDress = async (tg_options, photoPath) => {
     console.log(tg_options, photoPath);
 
     // Проверка наличия всех необходимых значений
-    // const requiredKeys = ['dino_thres', 'Dino_categore_1', 'Dino_categore_2', 'prompt_1', 'prompt_2', 'den_str_1', 'den_str_2', 'den_str_3', 'den_str_4', 'one_mask', 'content_type', 'person', 'mask_expand', 'adetailer_str'];
+    // const requiredKeys = ['dino_thres', 'dino_categore_1', 'dino_categore_2', 'prompt_1', 'prompt_2', 'den_str_1', 'den_str_2', 'den_str_3', 'den_str_4', 'one_mask', 'content_type', 'person', 'mask_expand', 'adetailer_str'];
     // for (const key of requiredKeys) {
     //   if (typeof tg_options[key] === 'undefined') {
     //     throw new Error(`Неопределенное значение для ключа ${key}`);
@@ -99,15 +99,15 @@ export const changeDress = async (tg_options, photoPath) => {
       args: [
         photoPath,
         dino_thres,
-        dino_category_1,
-        dino_category_2,
+        "clothes",
+        "bra, panties, underwear, shorts, garment",
         promt_1,
         promt_2,
         den_str_1,
         den_str_2,
         den_str_3,
         den_str_4,
-        one_mask,
+        0,
         content_type,
         person,
         mask_expand,
@@ -125,7 +125,7 @@ export const changeDress = async (tg_options, photoPath) => {
 };
 
 
-export async function colorizeAnime(photoPath,sessionPath, prompt) {
+export async function colorizeAnime(photoPath, sessionPath, prompt) {
 
   const imgBuffer = fs.readFileSync(photoPath);
   const imgBase64 = imgBuffer.toString('base64');
@@ -134,123 +134,123 @@ export async function colorizeAnime(photoPath,sessionPath, prompt) {
 
   const payload =
   {
-    "alwayson_scripts":{
-       "ControlNet":{
-          "args":[
-             {
-                "batch_images":"",
-                "control_mode":"My prompt is more important",
-                "enabled":true,
-                "guidance_end":1,
-                "guidance_start":0,
-                "image":null,
-                "input_mode":"simple",
-                "is_ui":true,
-                "loopback":false,
-                "low_vram":false,
-                "model":"control_v11p_sd15_canny_fp16 [b18e0966]",
-                "module":"canny",
-                "output_dir":"",
-                "pixel_perfect":true,
-                "processor_res":512,
-                "resize_mode":"Crop and Resize",
-                "threshold_a":100,
-                "threshold_b":200,
-                "weight":0.3
-             },
-             {
-                "batch_images":"",
-                "control_mode":"Balanced",
-                "enabled":true,
-                "guidance_end":1,
-                "guidance_start":0,
-                "image":null,
-                "input_mode":"simple",
-                "is_ui":true,
-                "loopback":false,
-                "low_vram":false,
-                "model":"control_v11p_sd15_lineart_fp16 [5c23b17d]",
-                "module":"lineart_standard (from white bg & black line)",
-                "output_dir":"",
-                "pixel_perfect":true,
-                "processor_res":512,
-                "resize_mode":"Crop and Resize",
-                "threshold_a":-1,
-                "threshold_b":-1,
-                "weight":0.7
-             },
-             {
-                "batch_images":"",
-                "control_mode":"Balanced",
-                "enabled":false,
-                "guidance_end":1,
-                "guidance_start":0,
-                "image":null,
-                "input_mode":"simple",
-                "is_ui":true,
-                "loopback":false,
-                "low_vram":false,
-                "model":"None",
-                "module":"none",
-                "output_dir":"",
-                "pixel_perfect":false,
-                "processor_res":-1,
-                "resize_mode":"Crop and Resize",
-                "threshold_a":-1,
-                "threshold_b":-1,
-                "weight":1
-             }
-          ]
-       },
+    "alwayson_scripts": {
+      "ControlNet": {
+        "args": [
+          {
+            "batch_images": "",
+            "control_mode": "My prompt is more important",
+            "enabled": true,
+            "guidance_end": 1,
+            "guidance_start": 0,
+            "image": null,
+            "input_mode": "simple",
+            "is_ui": true,
+            "loopback": false,
+            "low_vram": false,
+            "model": "control_v11p_sd15_canny_fp16 [b18e0966]",
+            "module": "canny",
+            "output_dir": "",
+            "pixel_perfect": true,
+            "processor_res": 512,
+            "resize_mode": "Crop and Resize",
+            "threshold_a": 100,
+            "threshold_b": 200,
+            "weight": 0.3
+          },
+          {
+            "batch_images": "",
+            "control_mode": "Balanced",
+            "enabled": true,
+            "guidance_end": 1,
+            "guidance_start": 0,
+            "image": null,
+            "input_mode": "simple",
+            "is_ui": true,
+            "loopback": false,
+            "low_vram": false,
+            "model": "control_v11p_sd15_lineart_fp16 [5c23b17d]",
+            "module": "lineart_standard (from white bg & black line)",
+            "output_dir": "",
+            "pixel_perfect": true,
+            "processor_res": 512,
+            "resize_mode": "Crop and Resize",
+            "threshold_a": -1,
+            "threshold_b": -1,
+            "weight": 0.7
+          },
+          {
+            "batch_images": "",
+            "control_mode": "Balanced",
+            "enabled": false,
+            "guidance_end": 1,
+            "guidance_start": 0,
+            "image": null,
+            "input_mode": "simple",
+            "is_ui": true,
+            "loopback": false,
+            "low_vram": false,
+            "model": "None",
+            "module": "none",
+            "output_dir": "",
+            "pixel_perfect": false,
+            "processor_res": -1,
+            "resize_mode": "Crop and Resize",
+            "threshold_a": -1,
+            "threshold_b": -1,
+            "weight": 1
+          }
+        ]
+      },
     },
-    "batch_size":1,
-    "cfg_scale":7,
-    "denoising_strength":1,
-    "do_not_save_grid":false,
-    "do_not_save_samples":false,
-    "height":640,
-    "init_images":[
+    "batch_size": 1,
+    "cfg_scale": 7,
+    "denoising_strength": 1,
+    "do_not_save_grid": false,
+    "do_not_save_samples": false,
+    "height": 640,
+    "init_images": [
       imgBase64
     ],
-    "initial_noise_multiplier":1,
-    "inpaint_full_res":0,
-    "inpaint_full_res_padding":32,
-    "inpainting_fill":1,
-    "inpainting_mask_invert":0,
-    "mask_blur_x":4,
-    "mask_blur_y":4,
-    "n_iter":4,
-    "negative_prompt":"",
-    "override_settings":{
-       
+    "initial_noise_multiplier": 1,
+    "inpaint_full_res": 0,
+    "inpaint_full_res_padding": 32,
+    "inpainting_fill": 1,
+    "inpainting_mask_invert": 0,
+    "mask_blur_x": 4,
+    "mask_blur_y": 4,
+    "n_iter": 4,
+    "negative_prompt": "",
+    "override_settings": {
+
     },
-    "override_settings_restore_afterwards":true,
+    "override_settings_restore_afterwards": true,
     "prompt": prompt,
-    "resize_mode":0,
-    "restore_faces":false,
-    "s_churn":0.0,
-    "s_min_uncond":0,
-    "s_noise":1.0,
-    "s_tmax":null,
-    "s_tmin":0.0,
-    "sampler_name":"Euler a",
-    "script_args":[
-       
+    "resize_mode": 0,
+    "restore_faces": false,
+    "s_churn": 0.0,
+    "s_min_uncond": 0,
+    "s_noise": 1.0,
+    "s_tmax": null,
+    "s_tmin": 0.0,
+    "sampler_name": "Euler a",
+    "script_args": [
+
     ],
-    "script_name":null,
-    "seed":-1.0,
-    "seed_enable_extras":false,
-    "seed_resize_from_h":0,
-    "seed_resize_from_w":0,
-    "steps":20,
-    "styles":[
-       "- Anime Negative"
+    "script_name": null,
+    "seed": -1.0,
+    "seed_enable_extras": false,
+    "seed_resize_from_h": 0,
+    "seed_resize_from_w": 0,
+    "steps": 20,
+    "styles": [
+      "- Anime Negative"
     ],
-    "subseed":-1,
-    "subseed_strength":0,
-    "tiling":false,
-    "width":640
- }
+    "subseed": -1,
+    "subseed_strength": 0,
+    "tiling": false,
+    "width": 640
+  }
 
   try {
     const response = await axios.post('http://127.0.0.1:7860/sdapi/v1/img2img', payload);

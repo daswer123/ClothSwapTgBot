@@ -16,19 +16,19 @@ export async function createSessionPath(ctx) {
 }
 
 export async function downloadPhoto(sessionPath, photo, telegram) {
-    const photoPath = path.join(sessionPath, `${photo.file_id}.jpg`);
-    const photoFile = await telegram.getFileLink(photo.file_id);
-  
-    // Скачиваем файл
-    const response = await axios.get(photoFile, {responseType: 'stream'});
-    const writer = fs.createWriteStream(photoPath);
-    response.data.pipe(writer);
-  
-    return new Promise((resolve, reject) => {
-      writer.on('finish', () => resolve(photoPath));
-      writer.on('error', reject);
-    });
-  }
+  const photoPath = path.join(sessionPath, `input.jpg`);
+  const photoFile = await telegram.getFileLink(photo.file_id);
+
+  // Скачиваем файл
+  const response = await axios.get(photoFile, { responseType: 'stream' });
+  const writer = fs.createWriteStream(photoPath);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', () => resolve(photoPath));
+    writer.on('error', reject);
+  });
+}
 
 // Отправить сообщение всем юзерам
 export async function sendMessageToAllUsers(message, bot) {
