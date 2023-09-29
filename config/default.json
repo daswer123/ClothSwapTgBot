@@ -1,0 +1,5 @@
+{
+    "TELEGRAM_TOKEN": "YOUR_TOKEN",
+    "PYTHON_VENV_PATH": "venv\\Scripts\\python",
+    "API_SCRIPT_PATH": "scripts"
+}
