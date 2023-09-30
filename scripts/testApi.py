@@ -134,13 +134,13 @@ def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
     breast_mask = ""
     under_mask = ""
 
-    print(mask_num)
-
-    create_edge_mask("mask1.png",3)
-    
+    # print(mask_num)
     dilate_mask("mask1.png",mask_expand)
     
     fullmask = filename_to_base64("mask1.png").decode()
+
+    create_edge_mask("mask1.png",3)
+    # edge_mask = filename_to_base64("test_mask_line.png").decode()
     return [fullmask]
 
     # if(one_mask > 0):
@@ -168,7 +168,7 @@ def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
 
     
 
-def second_request(onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Karras"):
+def second_request(batch_size,onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Karras"):
     # формирование запроса на второй этап
     payload2 = {
       "init_images": [img_base64],
@@ -176,12 +176,12 @@ def second_request(onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 
       "denoising_strength": den_str,
       "image_cfg_scale": 7,
       "mask": mask,
-      "mask_blur": 6,
+      "mask_blur": 8,
       "mask_blur_x": 0,
       "mask_blur_y": 0,
       "inpainting_fill": 1,
       "inpaint_full_res": True,
-      "inpaint_full_res_padding": 128,
+      "inpaint_full_res_padding": 64,
       "inpainting_mask_invert": 0,
       "initial_noise_multiplier": 1,
       "prompt": prompt,
@@ -191,17 +191,17 @@ def second_request(onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 
       "seed_resize_from_h": -1,
       "seed_resize_from_w": -1,
       "sampler_name": samler,
-      "batch_size": 2,
+      "batch_size": batch_size,
       "n_iter": 1,
       "steps": 25,
-      "cfg_scale": 7,
+      "cfg_scale": 6,
       "width": 640,
       "height": 640,
       "restore_faces": False,
       "tiling": False,
       "do_not_save_samples": False,
       "do_not_save_grid": False,
-      "negative_prompt": "(deformed, distorted, disfigured:1.2), poorly drawn, bad anatomy, wrong anatomy(mutated hands and fingers:1.2) mutation, mutated, ugly, blurry, amputation",
+      "negative_prompt": "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry",
       "eta": 31377,
       "s_min_uncond": 0,
       "s_churn": 0,
@@ -309,7 +309,7 @@ def main():
     if(args.person == "boy"):
         prompt_base = "man body, nature skin, RAW"
     else:
-        prompt_base = "girl, nature skin, RAW"
+        prompt_base = "RAW photo,(natural skin texture, muted colors)"
 
     os.chdir(directory)
     reply = first_request(img_base64,args.dino_thres,args.Dino_categore_1, args.Dino_categore_2)
@@ -322,7 +322,7 @@ def main():
         masks = [white_maks,pre_masks[0],pre_masks[1]]
 
     if(content_type == "real"):
-        change_model("absolutereality_v181INPAINTING.safetensors [7e16c94105]")
+        change_model("Reliberate-inpainting.safetensors [c54f90e540]")
     else:
         change_model("Anime-inpainting.safetensors [5bca7e55ea]")
 
@@ -338,12 +338,13 @@ def main():
     #     # img = second_request(masks[0],4, img,"detailed",0.1)
     # else:
     # change_model("reliberate_v20.safetensors [6b08e2c182]")
-    img = second_request(False,masks[1],0, img_base64, prompt_base + "(" + args.prompt_1 +":1.2 )",1)
+    img = second_request(6,False,masks[1],0, img_base64, prompt_base + "(" + args.prompt_1 +":1.0 )",1)
     # change_model("absolutereality_v181INPAINTING.safetensors [7e16c94105]")
-    img = second_request(False,masks[1],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
-    img = second_request(False,masks[1],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
-    img = second_request(False,masks[0],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.2 )",1)
-    img = second_request(True,white_maks,1, img, "",args.den_str_2)
+    # img = second_request(False,masks[1],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.0 )",1)
+    # img = second_request(2,False,masks[1],0, img, prompt_base,0.6)
+    # img = second_request(False,masks[1],0, img_base64, prompt_base,0.1,"Heun")
+    # img = second_request(False,masks[0],0, img_base64, prompt_base +"(" + args.prompt_1 +":1.0 )",1)
+    img = second_request(1,False,white_maks,1, img, "",0.2,"Heun")
         
 
 
