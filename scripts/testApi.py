@@ -2,10 +2,9 @@ import base64
 import requests
 from PIL import Image
 from io import BytesIO
-from detectMask import split_mask_into_regions, dilate_mask
+from detectMask import split_mask_into_regions, dilate_mask, create_white_image_base64,create_edge_mask
 import numpy as np
 from skimage import morphology
-from compare import compare_masks
 import argparse
 import os
 
@@ -19,47 +18,6 @@ def change_model(model_name):
     reply = response.json()
     print(reply)
     return reply
-
-
-def create_white_image_base64(img_filename):
-    # Открываем изображение, чтобы узнать его размер
-    img = Image.open(img_filename)
-
-    # Создаем полностью белое изображение того же размера
-    white_img = Image.fromarray(np.full((img.height, img.width, 3), 255, dtype=np.uint8))
-
-    # Преобразовываем PIL Image в base64
-    buffered = BytesIO()
-    white_img.save(buffered, format="PNG")
-    img_base64 = base64.b64encode(buffered.getvalue()).decode()
-
-    return img_base64
-
-def create_edge_mask(file_path, border_width = 5):
-    # Загружаем изображение и конвертируем в numpy array
-    img = Image.open(file_path)
-    mask = np.array(img)
-
-    # Создаем структурирующий элемент
-    selem = morphology.square(2*border_width)
-
-    # Применяем операцию дилатации и эрозии
-    dilated = morphology.dilation(mask, selem)
-    eroded = morphology.erosion(mask, selem)
-
-    # Создаем маску краев путем вычитания исходной маски из расширенной
-    edge_mask = dilated ^ eroded
-
-    # Сохраняем маску краев в файл
-    edge_mask_img = Image.fromarray(edge_mask)
-    edge_mask_img.save('test_mask_line.png')
-
-    # Конвертируем картинку в base64
-    buffered = BytesIO()
-    edge_mask_img.save(buffered, format="PNG")
-    img_base64 = base64.b64encode(buffered.getvalue()).decode()
-
-    return img_base64
 
 
 def filename_to_base64(filename):
@@ -113,7 +71,7 @@ def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
     save_mask(mask_base64_1,2)
     save_mask(mask_base64_2,3)
 
-    mask_num = compare_masks(["mask1.png", "mask2.png", "mask3.png"])
+    # mask_num = compare_masks(["mask1.png", "mask2.png", "mask3.png"])
 
     # if(len(mask_num) > 1):
     #   dilate_mask("mask2.png")

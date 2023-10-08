@@ -3,19 +3,15 @@ from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects
 from skimage.io import imread, imsave
 from skimage.filters import gaussian
+from skimage import morphology
 from PIL import Image
+import base64
+from io import BytesIO
 
 from skimage.morphology import disk
-from scipy.ndimage.morphology import binary_dilation
+from scipy.ndimage import binary_dilation
 
 def dilate_mask(mask_filename, dilation_radius=20):
-    """
-    Эта функция принимает имя файла маски, загружает маску, расширяет ее на заданное количество пикселей
-    и сохраняет расширенную маску в исходный файл.
-
-    :param mask_filename: Имя файла с маской, которую нужно расширить.
-    :param dilation_radius: Количество пикселей, на которые нужно расширить маску. По умолчанию равно 20.
-    """
 
     # Загружаем маску из файла
     mask = imread(mask_filename, as_gray=True)
@@ -31,7 +27,7 @@ def dilate_mask(mask_filename, dilation_radius=20):
 
     return mask_filename
 
-# dilate_mask("D:\\Dev\\UNDRESS_bot\\sessions\\225703666\\1245\\mask1.png",20)
+# dilate_mask("mask3.png",20)
 
 def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
     # Загрузим изображение маски
@@ -78,6 +74,50 @@ def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
 
     return masks  # Возвращаем список масок
 
-# split_mask_into_regions("mask1.png")
+def create_edge_mask(file_path, border_width = 5):
+    # Загружаем изображение и конвертируем в numpy array
+    img = Image.open(file_path)
+    mask = np.array(img)
+
+    # Создаем структурирующий элемент
+    selem = morphology.square(2*border_width)
+
+    # Применяем операцию дилатации и эрозии
+    dilated = morphology.dilation(mask, selem)
+    eroded = morphology.erosion(mask, selem)
+
+    # Создаем маску краев путем вычитания исходной маски из расширенной
+    edge_mask = dilated ^ eroded
+
+    # Сохраняем маску краев в файл
+    edge_mask_img = Image.fromarray(edge_mask)
+    edge_mask_img.save('test_mask_line.png')
+
+    # Конвертируем картинку в base64
+    buffered = BytesIO()
+    edge_mask_img.save(buffered, format="PNG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    return img_base64
+
+# create_edge_mask("mask3.png")
+# split_mask_into_regions("mask3.png")
 # split_mask_into_regions("mask2.png")
 # split_mask_into_regions("mask3.png")
+
+
+def create_white_image_base64(img_filename):
+    # Открываем изображение, чтобы узнать его размер
+    img = Image.open(img_filename)
+
+    # Создаем полностью белое изображение того же размера
+    white_img = Image.fromarray(np.full((img.height, img.width, 3), 255, dtype=np.uint8))
+
+    # Преобразовываем PIL Image в base64
+    buffered = BytesIO()
+    white_img.save(buffered, format="PNG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    return img_base64
+
+# create_white_image_base64("mask3.png")
