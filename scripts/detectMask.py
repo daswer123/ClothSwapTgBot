@@ -27,7 +27,7 @@ def dilate_mask(mask_filename, dilation_radius=20):
 
     return mask_filename
 
-# dilate_mask("mask3.png",20)
+dilate_mask("mask1.png",20)
 
 def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
     # Загрузим изображение маски

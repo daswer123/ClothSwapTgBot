@@ -61,7 +61,7 @@ def save_mask(mask_64, i):
     mask_name = f"mask{i}.png"  # Use f-string to insert the value of `i` into the file name
     mask_image.save(mask_name)
 
-def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
+def handle_first_response(reply,mask_expand = 5):
     # декодировать base64 в байты
     mask_base64 = reply["masks"][0]  # получить Вторую маску
     mask_base64_1 = reply["masks"][1]  # получить Вторую маску
@@ -71,59 +71,15 @@ def handle_first_response(reply,one_mask,mask_expand = 5,file_locate = ""):
     save_mask(mask_base64_1,2)
     save_mask(mask_base64_2,3)
 
-    # mask_num = compare_masks(["mask1.png", "mask2.png", "mask3.png"])
-
-    # if(len(mask_num) > 1):
-    #   dilate_mask("mask2.png")
-    #   dilate_mask("mask3.png")
-
-    # dilate_mask("mask1.png")
-    
-
-    # print(maskss)
-    # print("Этап 1 завершен")
-    # mask_bytes = base64.b64decode(mask_base64)
-    # # открыть изображение из байт
-    # mask_image = Image.open(BytesIO(mask_bytes))
-
-    # # сохранить изображение в файл
-    # mask_image.save("mask.png")
-
-    breast_mask = ""
-    under_mask = ""
-
-    # print(mask_num)
-    dilate_mask("mask1.png",mask_expand)
-    
     fullmask = filename_to_base64("mask1.png").decode()
-
-    create_edge_mask("mask1.png",3)
-    # edge_mask = filename_to_base64("test_mask_line.png").decode()
     return [fullmask]
 
-    # if(one_mask > 0):
-    #     dilate_mask(f"mask{1}.png",mask_expand)
-    #     fullmask = filename_to_base64(f"mask{1}.png").decode()
-    #     return [fullmask]
+    # dilate_mask("mask1.png",mask_expand)
+    # fullmask = filename_to_base64("mask1.png").decode()
 
-    # if(len(mask_num) > 1):
-    #     dilate_mask(f"mask{mask_num[0]}.png",mask_expand)
-    #     dilate_mask(f"mask{mask_num[1]}.png",mask_expand)
-    #     breast_mask = filename_to_base64(f"mask{mask_num[0]}.png").decode()
-    #     under_mask = filename_to_base64(f"mask{mask_num[1]}.png").decode()
-    # else:
-    #     masks = split_mask_into_regions(f"mask{mask_num[0]}.png",1000, mask_expand)
-    #     if(len(masks) > 1):
-    #         breast_mask = filename_to_base64("mask1.png").decode()
-    #         under_mask = filename_to_base64("mask2.png").decode()
-    #     else:
-    #         dilate_mask(f"mask{1}.png",mask_expand)
-    #         fullmask = filename_to_base64("mask1.png").decode()
-    #         return [fullmask]
-    # return [breast_mask, under_mask]
-    # masks = split_mask_into_regions("mask2.png")
-    # masks = split_mask_into_regions("mask3.png")
+    # create_edge_mask("mask1.png",3)
 
+    # return [fullmask]
     
 
 def second_request(batch_size,onAdt,mask, index, img_base64,prompt,den_str,samler = "DPM++ 2M Karras"):
