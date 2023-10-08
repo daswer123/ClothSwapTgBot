@@ -1,0 +1,29 @@
+{
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "indent": ["error", 4],
+      "prettier/prettier": ["error", {
+        "printWidth": 130,
+        "endOfLine": "auto",
+        "semi": true,
+        "singleQuote": false,
+        "tabWidth": 4
+      }]
+    }
+  }
+  

@@ -5,7 +5,7 @@ import axios from 'axios';
 import path from 'path';
 import { decode } from 'base64-arraybuffer';
 import { PythonShell } from 'python-shell';
-import { DINO_CATEGORY_1, DINO_CATEGORY_2, DINO_MODEL, SAM_MODEL, SD_ADRESS } from '../env.js';
+import { DINO_CATEGORY_1, DINO_CATEGORY_2, DINO_MODEL, SAM_MODEL, SD_ADRESS, negPromptBase } from '../variables.js';
 
 // Work with python
 export const dilatePython = async (filename, maskSize = 20) => {
@@ -174,7 +174,7 @@ async function secondRequest(imgBase64, mask, index, prompt, onAdt, batchSize, d
         "tiling": false,
         "do_not_save_samples": false,
         "do_not_save_grid": false,
-        "negative_prompt": "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry",
+        "negative_prompt": negPromptBase,
         "eta": 31377,
         "s_min_uncond": 0,
         "s_churn": 0,
