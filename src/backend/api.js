@@ -7,6 +7,57 @@ import { decode } from 'base64-arraybuffer';
 import { PythonShell } from 'python-shell';
 import { DINO_CATEGORY_1, DINO_CATEGORY_2, DINO_MODEL, SAM_MODEL, SD_ADRESS } from '../env.js';
 
+// Work with python
+export const dilatePython = async (filename, maskSize = 20) => {
+    try {
+        // let mp3Path = `${sessionPath}/${filename}`;
+
+        let optionss = {
+            mode: 'text',
+            pythonPath: "venv\\Scripts\\python",
+            pythonOptions: ['-u'], // get print results in real-time
+            scriptPath: "scripts",
+            args: [
+                '-d',
+                `${filename}`,
+                maskSize
+            ]
+        };
+
+        const messages = await PythonShell.run('detectMask.py', optionss)
+
+
+        return messages
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const createEdgeMaskPython = async (filename, borderSize = 5) => {
+    try {
+        // let mp3Path = `${sessionPath}/${filename}`;
+
+        let optionss = {
+            mode: 'text',
+            pythonPath: "venv\\Scripts\\python",
+            pythonOptions: ['-u'], // get print results in real-time
+            scriptPath: "scripts",
+            args: [
+                '-e',
+                `${filename}`,
+                borderSize
+            ]
+        };
+
+        const messages = await PythonShell.run('detectMask.py', optionss)
+
+
+        return messages
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 // Help functions
 async function filenameToBase64(filename) {
     const filePath = path.resolve(filename);
@@ -28,7 +79,7 @@ async function changeModel(modelName) {
     return response.data;
 }
 
-async function handleMasks(reply) {
+async function modifyMasks(reply, expandSize) {
     // Получаем маски из ответа и сохраняем их
     // for (let i = 0; i < reply.masks.length; i++) {
     //     await saveMask(reply.masks[i], i + 1);
@@ -36,6 +87,12 @@ async function handleMasks(reply) {
 
     // Сохраняем 1-ю маску
     await saveMask(reply.masks[0], 1);
+
+    // Расширяем маску на указанное кол-во пикселей
+    await dilatePython("mask1.png", expandSize)
+
+    // Создаем маску с краями указанное маски , что бы скрыть огрехи генерации
+    await createEdgeMaskPython("mask1.png")
 
     // Загружаем сохраненную маску и преобразуем ее в base64
     const fullmask = await filenameToBase64("mask1.png")
@@ -74,6 +131,15 @@ async function createMask(imgBase64, dinoThres) {
     }
 
     return reply;
+}
+
+async function handleMask(imgBase64, dinoThres = 0.3, expandSize = 20) {
+    const reply = await createMask(imgBase64, dinoThres);
+    console.log("Маски созданны")
+    const fullmask = await modifyMasks(reply, expandSize);
+    console.log("Модификация масок завершенна")
+
+    return fullmask
 }
 
 async function secondRequest(imgBase64, mask, index, prompt, onAdt, batchSize, denStr, sampler = "DPM++ 2M Karras") {
@@ -172,13 +238,13 @@ async function secondRequest(imgBase64, mask, index, prompt, onAdt, batchSize, d
 
 
 
-
 const img_base64 = await filenameToBase64("input.jpg")
 
-const reply = await createMask(img_base64, 0.3);
-console.log("Этап 1 завершен")
-const fullmask = await handleMasks(reply);
-console.log("Этап 2 завершен")
-const result = await secondRequest(img_base64, fullmask, 1, "yellow short and top", false, 1, 1)
+// const reply = await createMask(img_base64, 0.3);
+// console.log("Этап 1 завершен")
+const fullmask = await handleMask(img_base64, 0.3, 20);
+// console.log("Этап 2 завершен")
+let result = await secondRequest(img_base64, fullmask, 1, "yellow short and top", false, 1, 1)
+result = await secondRequest(result, result, 1, "yellow short and top", false, 1, 0.2)
 console.log("Этап 3 завершен")
 
