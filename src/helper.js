@@ -43,28 +43,32 @@ export const createMenu = (message, buttons) => {
     return { message, keyboard };
 };
 
-export const processSetting = (ctx, settingName, dataType, minValue = null, maxValue = null) => {
+// Шаблон для обработки настроек
+export const processSetting = (ctx, settingName, dataType, minValue = null, maxValue = null, cancelButtonCallback = "menu") => {
     return async (newValue) => {
+        const keyboard = Markup.inlineKeyboard([Markup.button.callback("🔙 Назад", cancelButtonCallback)]); // Создаем кнопку отмены
+
         switch (dataType) {
-        case "number":
-            newValue = Number(newValue);
-            if (minValue !== null && newValue < minValue) {
-                return ctx.reply(`Значение должно быть больше ${minValue}`);
-            }
-                if (maxValue !== null && newValue > maxValue) {
-                return ctx.reply(`Значение должно быть меньше ${maxValue}`);
-            }
-            break;
-        case "boolean":
-            newValue = newValue.toLowerCase() === "true";
-            break;
-        case "string":
+            case "number":
+                newValue = Number(newValue);
+                if (isNaN(newValue)) {
+                    await ctx.reply(`🚫 Неверное значение. Значение должно быть числом.`, keyboard);
+                    return false;
+                }
+                if ((minValue !== null && newValue < minValue) || (maxValue !== null && newValue > maxValue)) {
+                    await ctx.reply(`🚫 Значение должно быть в диапазоне между ${minValue} и ${maxValue}.`, keyboard);
+                    return false;
+                }
+                break;
+            case "string":
                 // Проверки для строковых значений могут быть добавлены здесь
-            break;
-        default:
-                return ctx.reply(`Неизвестный тип данных: ${dataType}`);
+                break;
+            default:
+                await ctx.reply(`🚫 Неизвестный тип данных: ${dataType}`, keyboard);
+                return false;
         }
         ctx.session[settingName] = newValue;
-        return ctx.reply(`Настройка ${settingName} обновлена до ${newValue}`);
+        await ctx.reply(`✅ Настройка ${settingName} обновлена до ${newValue}`, keyboard);
+        return true; // Возвращает true, если обновление настроек прошло успешно
     };
 };

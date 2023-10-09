@@ -1,6 +1,6 @@
 // import { Markup } from 'telegraf';
 
-import { processSetting, withErrorHandling } from "../helper.js";
+import { withErrorHandling } from "../helper.js";
 import { showMenu } from "../menus/mainMenu.js";
 import { showSettings } from "../menus/settingsMenu.js";
 
@@ -13,9 +13,28 @@ export const registerBotActions = withErrorHandling(async (bot) => {
         showSettings(ctx);
     });
 
-    bot.action("volume", async (ctx) => {
-        ctx.replyWithMarkdownV2("Введите настройку");
-        ctx.scene.enter("volume");
+    bot.action("dinoTreshSetting", async (ctx) => {
+        // ctx.replyWithMarkdownV2("Введите настройку");
+        ctx.scene.enter("dinoTreshSetting");
+        ctx.answerCbQuery();
+    });
+
+    bot.action("expandMaskSetting", async (ctx) => {
+        // ctx.replyWithMarkdownV2("Введите настройку");
+        ctx.scene.enter("expandMaskSetting");
+        ctx.answerCbQuery();
+    });
+
+    bot.action("contentTypeSetting", async (ctx) => {
+        // ctx.replyWithMarkdownV2("Введите настройку");
+        ctx.scene.enter("contentTypeSetting");
+        ctx.answerCbQuery();
+    });
+
+    bot.action("setSexSetting", async (ctx) => {
+        // ctx.replyWithMarkdownV2("Введите настройку");
+        ctx.scene.enter("setSexSetting");
+        ctx.answerCbQuery();
     });
     // Подключенние action бота для других модулей
 });

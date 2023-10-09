@@ -1,6 +1,7 @@
 import { createMenu, withErrorHandling } from "../helper.js";
 
 export const showMenu = withErrorHandling(async (ctx) => {
+    await ctx.scene.leave();
     const message = `
   *🤖 Cloth Swap Бот 🎩👗*
   
