@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import argparse
 import sys
 from skimage.io import imread
@@ -89,9 +90,15 @@ def create_edge_mask(file_path, border_width = 5):
     # Создаем маску краев путем вычитания исходной маски из расширенной
     edge_mask = dilated ^ eroded
 
+    # Получаем путь к папке, в которой находится исходный файл
+    directory = os.path.dirname(file_path)
+
+    # Создаем путь к новому файлу в той же папке
+    edge_mask_path = os.path.join(directory, 'edge_mask.png')
+
     # Сохраняем маску краев в файл
     edge_mask_img = Image.fromarray(edge_mask)
-    edge_mask_img.save('edge_mask.png')
+    edge_mask_img.save(edge_mask_path)
 
     # Конвертируем картинку в base64
     buffered = BytesIO()

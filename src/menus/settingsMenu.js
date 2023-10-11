@@ -3,7 +3,7 @@ import { createMenu, withErrorHandling } from "../helper.js";
 export const showSettings = withErrorHandling(async (ctx) => {
     await ctx.scene.leave();
 
-    const { dinoStr, contentType, person, mask_expand } = ctx.session;
+    const { dinoStr, contentType, breastSize, mask_expand } = ctx.session;
     const message = `
 *⚙️ Настройки Cloth Swap 🧥👗*
 
@@ -21,7 +21,7 @@ export const showSettings = withErrorHandling(async (ctx) => {
             { text: `🔍 Усиление маски ${mask_expand}`, action: "expandMaskSetting" },
         ],
         [
-            { text: `👫 Пол: ${person}`, action: "setSexSetting" },
+            { text: `👫 Размер груди: ${breastSize}`, action: "setSexSetting" },
             { text: `🌍 Тип контента: ${contentType}`, action: "contentTypeSetting" },
         ],
         [{ text: "🔙 Меню", action: "menu" }],

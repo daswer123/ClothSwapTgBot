@@ -5,7 +5,7 @@ export const DINO_CATEGORY_1 = `clothes`;
 export const DINO_CATEGORY_2 = `bra, panties, underwear, shorts, garment`;
 
 // PROMPT base
-export const promptBaseFemale = "RAW photo,(natural skin texture, muted colors)";
+export const promptBaseFemale = "maximum details,RAW photo of a girl,(natural skin texture, muted colors)";
 export const promptBaseMale = "man body, nature skin, RAW";
 export const negPromptBase =
     "[deformed | disfigured], poorly drawn, [bad : wrong] anatomy, [extra | missing | floating | disconnected] limb, (mutated hands and fingers), blurry";
@@ -23,7 +23,8 @@ export const INITIAL_SESSION = {
     dinoStr: 0.3,
     prompt_1: "Yellow clothes",
     contentType: "real",
-    person: "girl",
+    breastSize: "medium",
     mask_expand: 15,
+    preset: "bikini",
     // Waiting hanlders
 };

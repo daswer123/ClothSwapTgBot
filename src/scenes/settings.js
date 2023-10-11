@@ -2,11 +2,19 @@
 
 import { createOptionScene, createScene } from "./base.js";
 
-const dinoStrScene = createScene("dinoTreshSetting", "Введите силу обнаружения маски:", "dinoStr", "number", 0.1, 1, "settings");
+const dinoStrScene = createScene(
+    "dinoTreshSetting",
+    "Введите силу обнаружения маски:\nСтандратное значение 0.3",
+    "dinoStr",
+    "number",
+    0.1,
+    1,
+    "settings",
+);
 
 const expandMaskScene = createScene(
     "expandMaskSetting",
-    "Введите силу расширения маски:",
+    "Введите силу расширения маски:\nСтандратное значение: 15",
     "mask_expand",
     "number",
     1,
@@ -24,9 +32,9 @@ const contentTypeSettingScene = createOptionScene(
 
 const setSexSettingScene = createOptionScene(
     "setSexSetting",
-    "Выберите пол:",
-    "contentType",
-    [["Мужской", "Женский"]],
+    "Выберите размер груди:",
+    "breastSize",
+    [["small", "medium", "big"]],
     "settings",
 );
 
