@@ -1,21 +1,20 @@
 import numpy as np
+import os
+import argparse
+import sys
+from skimage.io import imread
+from skimage import morphology
+from PIL import Image
+import base64
+from io import BytesIO
+import numpy as np
 from skimage.measure import label, regionprops
 from skimage.morphology import remove_small_objects
-from skimage.io import imread, imsave
 from skimage.filters import gaussian
-from PIL import Image
-
 from skimage.morphology import disk
-from scipy.ndimage.morphology import binary_dilation
+from scipy.ndimage import binary_dilation
 
 def dilate_mask(mask_filename, dilation_radius=20):
-    """
-    Эта функция принимает имя файла маски, загружает маску, расширяет ее на заданное количество пикселей
-    и сохраняет расширенную маску в исходный файл.
-
-    :param mask_filename: Имя файла с маской, которую нужно расширить.
-    :param dilation_radius: Количество пикселей, на которые нужно расширить маску. По умолчанию равно 20.
-    """
 
     # Загружаем маску из файла
     mask = imread(mask_filename, as_gray=True)
@@ -30,8 +29,6 @@ def dilate_mask(mask_filename, dilation_radius=20):
     Image.fromarray(dilated_mask).save(mask_filename)
 
     return mask_filename
-
-# dilate_mask("D:\\Dev\\UNDRESS_bot\\sessions\\225703666\\1245\\mask1.png",20)
 
 def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
     # Загрузим изображение маски
@@ -78,6 +75,85 @@ def split_mask_into_regions(mask_filename, min_size=1200, dilation_radius=20):
 
     return masks  # Возвращаем список масок
 
-# split_mask_into_regions("mask1.png")
-# split_mask_into_regions("mask2.png")
-# split_mask_into_regions("mask3.png")
+def create_edge_mask(file_path, border_width = 5):
+    # Загружаем изображение и конвертируем в numpy array
+    img = Image.open(file_path)
+    mask = np.array(img)
+
+    # Создаем структурирующий элемент
+    selem = morphology.square(2*border_width)
+
+    # Применяем операцию дилатации и эрозии
+    dilated = morphology.dilation(mask, selem)
+    eroded = morphology.erosion(mask, selem)
+
+    # Создаем маску краев путем вычитания исходной маски из расширенной
+    edge_mask = dilated ^ eroded
+
+    # Получаем путь к папке, в которой находится исходный файл
+    directory = os.path.dirname(file_path)
+
+    # Создаем путь к новому файлу в той же папке
+    edge_mask_path = os.path.join(directory, 'edge_mask.png')
+
+    # Сохраняем маску краев в файл
+    edge_mask_img = Image.fromarray(edge_mask)
+    edge_mask_img.save(edge_mask_path)
+
+    # Конвертируем картинку в base64
+    buffered = BytesIO()
+    edge_mask_img.save(buffered, format="PNG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    return img_base64
+
+
+def create_white_image_base64(img_filename):
+    # Открываем изображение, чтобы узнать его размер
+    img = Image.open(img_filename)
+
+    # Создаем полностью белое изображение того же размера
+    white_img = Image.fromarray(np.full((img.height, img.width, 3), 255, dtype=np.uint8))
+
+    # Преобразовываем PIL Image в base64
+    buffered = BytesIO()
+    white_img.save(buffered, format="PNG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode()
+
+    return img_base64
+
+# create_white_image_base64("mask3.png")
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Image processing with Scikit-image')
+    parser.add_argument('-d', '--dilate', nargs=2, metavar=('mask_filename', 'dilation_radius'), 
+                        help='Dilate the mask with the specified radius')
+    parser.add_argument('-s', '--split', nargs=3, metavar=('mask_filename', 'min_size', 'dilation_radius'), 
+                        help='Split the mask into regions')
+    parser.add_argument('-e', '--edge', nargs=2, metavar=('file_path', 'border_width'), 
+                        help='Create an edge mask with a specified border width')
+    parser.add_argument('-w', '--white', nargs=1, metavar='img_filename', 
+                        help='Create a white image')
+
+    args = parser.parse_args()
+
+    if args.dilate:
+        mask_filename, dilation_radius = args.dilate
+        dilate_mask(mask_filename, int(dilation_radius))
+
+    if args.split:
+        mask_filename, min_size, dilation_radius = args.split
+        split_mask_into_regions(mask_filename, int(min_size), int(dilation_radius))
+
+    if args.edge:
+        file_path, border_width = args.edge
+        create_edge_mask(file_path, int(border_width))
+
+    if args.white:
+        img_filename = args.white[0]
+        create_white_image_base64(img_filename)
+
+
+if __name__ == "__main__":
+    main()
