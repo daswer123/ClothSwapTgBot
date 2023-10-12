@@ -68,12 +68,6 @@ export async function downloadPhoto(sessionPath, photo, telegram) {
 }
 
 export async function createChangeButtons(ctx, sessionPath, msgId) {
-    // const clothingOptions = {
-    //     "🩲 Бикини": "bikini",
-    //     "🥵 Нижнее белье": "underwear",
-    //     "🌶 Раздеть": "nude",
-    // };
-
     const clothingOptions = {
         "Футболка + шорты": "t-short and shorts",
         Форма: "school uniform, short skirt",
