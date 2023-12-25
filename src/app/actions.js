@@ -39,6 +39,29 @@ export const registerBotActions = withErrorHandling(async (bot) => {
         ctx.answerCbQuery();
     });
 
+    bot.action("default_photo", async (ctx) => {
+        ctx.session.promptMode = true;
+        ctx.session.refMode = false;
+        ctx.session.SecondStage = false;
+        ctx.session.refSession = "";
+        ctx.reply(
+            "Режим переключена на преобразование одежды по запросу\nОтправьте любуй фотографию и выберите во что перереодеть персонажа\n\nПока вы не переключите режим все фотографии будут обрабатыватся в этом режиме",
+        );
+    });
+
+    bot.action("ref_photo", async (ctx) => {
+        ctx.session.promptMode = false;
+        ctx.session.refMode = true;
+        ctx.reply(
+            "Режим переключенн на преобразование одежды по образцу\nСначало отправьте фотографию с которой будет скопированна одежда, потом отправьте фотографию в которой вы бы хотели видеть эту одежду\n\nПока вы не переключите режим все фотографии будут обрабатыватся в этом режиме",
+        );
+    });
+
+    bot.action("my_prompt", async (ctx) => {
+        ctx.reply("Введите подсказку на английском, какую одежду вы бы хотели видить на фотографии");
+        ctx.session.waitForTextPrompt = true;
+    });
+
     bot.action(/swap_(.*)_([0-9]+)/, async (ctx) => {
         // Этот код будет выполнен, когда пользователь нажмет на кнопку
 
@@ -53,6 +76,7 @@ export const registerBotActions = withErrorHandling(async (bot) => {
 
         const uniqueId = ctx.from.id; // получаем уникальный идентификатор пользователя
         const sessionPath = `sessions/${uniqueId}/${msgId}`;
+        ctx.session.promptModeCustom = "";
 
         ctx.session.prompt_1 = clothing;
 

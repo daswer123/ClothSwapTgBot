@@ -21,7 +21,7 @@ export const showSettings = withErrorHandling(async (ctx) => {
             { text: `🔍 Усиление маски ${mask_expand}`, action: "expandMaskSetting" },
         ],
         [
-            { text: `👫 Размер груди: ${breastSize}`, action: "setSexSetting" },
+            // { text: `👫 Размер груди: ${breastSize}`, action: "setSexSetting" },
             { text: `🌍 Тип контента: ${contentType}`, action: "contentTypeSetting" },
         ],
         [{ text: "🔙 Меню", action: "menu" }],

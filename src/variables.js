@@ -26,5 +26,7 @@ export const INITIAL_SESSION = {
     breastSize: "medium",
     mask_expand: 15,
     preset: "bikini",
+    promptMode: true,
+    refMode: false,
     // Waiting hanlders
 };

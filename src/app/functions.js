@@ -52,8 +52,8 @@ export async function createSessionPath(ctx) {
     return sessionPath;
 }
 
-export async function downloadPhoto(sessionPath, photo, telegram) {
-    const photoPath = path.join(sessionPath, `input.jpg`);
+export async function downloadPhoto(sessionPath, photo, telegram, name = "input.jpg") {
+    const photoPath = path.join(sessionPath, name);
     const photoFile = await telegram.getFileLink(photo.file_id);
 
     // Скачиваем файл
@@ -72,6 +72,7 @@ export async function createChangeButtons(ctx, sessionPath, msgId) {
         "Футболка + шорты": "t-short and shorts",
         Форма: "school uniform, short skirt",
         Платье: "dress",
+        Бикини: "bikini",
     };
 
     // Генерируем кнопки по две в ряд
@@ -82,6 +83,8 @@ export async function createChangeButtons(ctx, sessionPath, msgId) {
     }
 
     // Добавляем кнопку "Отмена"
+    ctx.session.promptModeCustom = msgId;
+    buttons.push([Markup.button.callback("Свой вариант", "my_prompt")]);
     buttons.push([Markup.button.callback("Отмена", "menu")]);
 
     const inlineKeyboard = Markup.inlineKeyboard(buttons);
