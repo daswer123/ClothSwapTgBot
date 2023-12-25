@@ -2,19 +2,11 @@
 
 import { createOptionScene, createScene } from "./base.js";
 
-const dinoStrScene = createScene(
-    "dinoTreshSetting",
-    "Введите силу обнаружения маски:\nСтандратное значение 0.3",
-    "dinoStr",
-    "number",
-    0.1,
-    1,
-    "settings",
-);
+const dinoStrScene = createScene("dinoTreshSetting", "Введите силу обнаружения маски", "dinoStr", "number", 0.1, 1, "settings");
 
 const expandMaskScene = createScene(
     "expandMaskSetting",
-    "Введите силу расширения маски:\nСтандратное значение: 15",
+    "Введите силу расширения маски: Стандратное значение: 15",
     "mask_expand",
     "number",
     1,
