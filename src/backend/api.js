@@ -237,15 +237,15 @@ export async function changeDress(ctx, sessionPath) {
     let breastSize = "";
 
     switch (params.breastSize) {
-        case "small":
-            breastSize = " 14yo girl, small breasts";
-            break;
-        case "medium":
-            breastSize = " 18yo girl, average breasts";
-            break;
-        case "big":
-            breastSize = " big breasts";
-            break;
+    case "small":
+        breastSize = " 14yo girl, small breasts";
+        break;
+    case "medium":
+        breastSize = " 18yo girl, average breasts";
+        break;
+    case "big":
+        breastSize = " big breasts";
+        break;
     }
 
     // prompt += breastSize + " ";
@@ -259,7 +259,7 @@ export async function changeDress(ctx, sessionPath) {
     // const reply = await createMask(img_base64, 0.3);
     console.log("Этап 1 завершен");
     console.log(params.mask_expand);
-    const fullmask = await handleMask(img_base64, 0.3, params.mask_expand, sessionPath);
+    const fullmask = await handleMask(img_base64, params.dinoStr, params.mask_expand, sessionPath);
     console.log("Этап 2 завершен");
     let result = await secondRequest(sessionPath, img_base64, fullmask[0], 1, prompt, false, 1, 1);
     result = await secondRequest(sessionPath, result, fullmask[0], 1, params.prompt_1, false, 1, 1);
@@ -393,15 +393,15 @@ export async function changeDressRef(ctx, sessionPath) {
     let breastSize = "";
 
     switch (params.breastSize) {
-        case "small":
-            breastSize = " 14yo girl, small breasts";
-            break;
-        case "medium":
-            breastSize = " 18yo girl, average breasts";
-            break;
-        case "big":
-            breastSize = " big breasts";
-            break;
+    case "small":
+        breastSize = " 14yo girl, small breasts";
+        break;
+    case "medium":
+        breastSize = " 18yo girl, average breasts";
+        break;
+    case "big":
+        breastSize = " big breasts";
+        break;
     }
 
     // prompt += breastSize + " ";
@@ -417,7 +417,7 @@ export async function changeDressRef(ctx, sessionPath) {
 
     // const reply = await createMask(img_base64, 0.3);
     // console.log("Этап 1 завершен")
-    const fullmask = await handleMask(img_base64, 0.3, 20, sessionPath);
+    const fullmask = await handleMask(img_base64, params.dinoStr, params.mask_expand, sessionPath);
     // console.log("Этап 2 завершен")
     let result = await secondRequestRef(sessionPath, img_base64, img_base64_ref, fullmask[0], 1, prompt, true, 1, 1);
     // result = await secondRequest(sessionPath, result, fullmask[0], 1, params.prompt_1, false, 1, 1);
