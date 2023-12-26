@@ -234,21 +234,6 @@ export async function changeDress(ctx, sessionPath) {
     const params = ctx.session;
 
     let prompt = params.prompt_1;
-    let breastSize = "";
-
-    switch (params.breastSize) {
-    case "small":
-        breastSize = " 14yo girl, small breasts";
-        break;
-    case "medium":
-        breastSize = " 18yo girl, average breasts";
-        break;
-    case "big":
-        breastSize = " big breasts";
-        break;
-    }
-
-    // prompt += breastSize + " ";
     // prompt = `(${prompt}):1.2 ` + promptBaseFemale;
 
     console.log(prompt);
@@ -390,21 +375,6 @@ export async function changeDressRef(ctx, sessionPath) {
     const params = ctx.session;
 
     let prompt = params.prompt_1;
-    let breastSize = "";
-
-    switch (params.breastSize) {
-    case "small":
-        breastSize = " 14yo girl, small breasts";
-        break;
-    case "medium":
-        breastSize = " 18yo girl, average breasts";
-        break;
-    case "big":
-        breastSize = " big breasts";
-        break;
-    }
-
-    // prompt += breastSize + " ";
     // prompt = `(${prompt}):1.2 ` + promptBaseFemale;
     prompt = prompt + promptBaseFemale;
 
@@ -425,10 +395,3 @@ export async function changeDressRef(ctx, sessionPath) {
     console.log("Этап 3 завершен");
     return result;
 }
-// const ctx = {};
-// ctx.session = {
-//     prompt_1: "sport outfit ",
-//     breastSize: "medium",
-// };
-
-// changeDressRef(ctx, "test");
